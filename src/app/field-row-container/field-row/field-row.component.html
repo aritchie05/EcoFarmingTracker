@@ -1,0 +1,44 @@
+<div class="m-4">
+  <form class="flex flex-wrap items-center">
+    <mat-form-field appearance="outline" floatLabel="always" class="m-3 flex-1 min-w-48">
+      <mat-label>Field Name</mat-label>
+      <input matInput type="text" name="field-name"
+             [placeholder]="fieldPlaceholder()"
+             [ngModel]="field().name()"
+             (ngModelChange)="onFieldNameChange($event)"
+             class="placeholder:opacity-70">
+    </mat-form-field>
+    <mat-form-field appearance="outline" floatLabel="always" class="m-3 flex-1 min-w-40">
+      <mat-label>Crop</mat-label>
+      <mat-select name="field-crop"
+                  [ngModel]="field().crop()"
+                  (ngModelChange)="onCropChange($event)"
+                  class="mx-3">
+        @for (crop of cropOptions(); track crop.id) {
+          <mat-option [value]="crop">{{ crop.name() }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" floatLabel="always" class="m-3 cursor-not-allowed w-32">
+      <mat-label>Growth Time</mat-label>
+      <input matInput readonly type="text"
+             [value]="field().growthTime()"
+             class="cursor-not-allowed">
+    </mat-form-field>
+    <div class="mx-4 w-40 flex flex-col items-center">
+      <button mat-stroked-button class="w-28 mb-2" (click)="field().onPlant()">{{ field().isPlanted() ? 'Replant' : 'Plant' }}</button>
+      @if (field().plantTime()) {
+        <span>{{ displayedPlantTime() }}</span>
+      }
+    </div>
+    <div class="mx-4 w-40 flex flex-col items-center">
+      <button mat-stroked-button class="w-28 mb-2" (click)="field().onHarvest()">Harvest</button>
+      @if (field().harvestTime()) {
+        <span>{{ displayedHarvestTime() }}</span>
+      }
+    </div>
+    <div class="mx-2 flex items-center">
+      <span class="material-icons cursor-pointer hover:opacity-80" (click)="rowClosed.emit(field())">close</span>
+    </div>
+  </form>
+</div>

@@ -1,8 +1,12 @@
 # EcoFarmingTracker
+This project is a migrated version of the original [Eco Farming Tool](https://github.com/aritchie05/eco-farming-tool/). That project was a Java web app that used Spring Boot with Thymeleaf for UI rendering. I took that down because the hosting service I was using (Heroku) got rid of their free tier.
+So I rewrote this using Angular 19, so I could host it for free using [Vercel](https://vercel.com) (shoutout to them, they are amazing).
+
+## Angular Details
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.6.
 
-## Development server
+### Development server
 
 To start a local development server, run:
 
@@ -12,7 +16,7 @@ ng serve
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
-## Code scaffolding
+### Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
 
@@ -36,7 +40,7 @@ ng build
 
 This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
-## Running unit tests
+### Running unit tests
 
 To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
 
@@ -44,7 +48,7 @@ To execute unit tests with the [Karma](https://karma-runner.github.io) test runn
 ng test
 ```
 
-## Running end-to-end tests
+### Running end-to-end tests
 
 For end-to-end (e2e) testing, run:
 
@@ -54,6 +58,6 @@ ng e2e
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
-## Additional Resources
+### Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
