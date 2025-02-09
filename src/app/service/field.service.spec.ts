@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { FieldService } from './field.service';
+import {FieldService} from './field.service';
 
 describe('FieldService', () => {
   let service: FieldService;

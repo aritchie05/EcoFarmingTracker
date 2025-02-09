@@ -14,5 +14,4 @@ import {FieldRowContainerComponent} from './field-row-container/field-row-contai
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'Eco Farming Tracker';
 }

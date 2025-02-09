@@ -1,12 +1,11 @@
 import {Crop} from './crop';
 import {Duration} from './duration';
-import {linkedSignal, signal, Signal, WritableSignal} from '@angular/core';
+import {signal} from '@angular/core';
 
 export class Field {
   id: number;
   name = signal('');
-  crop = signal(new Crop('-1', '', false, 0, 0));
-  growthTime = signal(new Duration(0, 0));
+  crop = signal(new Crop('-1', '', false, new Duration(0, 0)));
   plantTime = signal<Date | undefined>(undefined)
   harvestTime = signal<Date | undefined>(undefined);
   selfRegenFullyGrown = signal(false);
@@ -17,15 +16,23 @@ export class Field {
   constructor(id: number, crop: Crop) {
     this.id = id;
     this.crop = signal(crop);
-    this.growthTime = linkedSignal(() => this.crop().growthTime());
     this.selfRegenFullyGrown = signal(false);
   }
 
-  onPlant() {
-    if (this.selfRegenFullyGrown() && this.isPlanted()) {
-      this.resetGrowthTime();
+  serialize(): StoredField {
+    return {
+      id: this.id,
+      name: this.name(),
+      cropId: this.crop().id(),
+      plantTime: this.plantTime(),
+      harvestTime: this.harvestTime(),
+      selfRegenFullyGrown: this.selfRegenFullyGrown(),
+      isPlanted: this.isPlanted()
     }
+  }
 
+  onPlant() {
+    this.selfRegenFullyGrown.set(false);
     this.plant();
   }
 
@@ -43,19 +50,18 @@ export class Field {
     this.isPlanted.set(true);
 
     const plantTimestamp = plantTime.getTime();
-    const growthHours = this.growthTime().hours;
-    const growthMinutes = this.growthTime().minutes;
-    const harvestTimestamp = plantTimestamp + (growthHours * 60 * 60 * 1000) + (growthMinutes * 60 * 1000);
+    const growthHours = this.crop().growthTime().hours;
+    const growthMinutes = this.crop().growthTime().minutes;
+    let additionalMillis = (growthHours * 60 * 60 * 1000) + (growthMinutes * 60 * 1000);
+    if (this.selfRegenFullyGrown()) {
+      additionalMillis *= 0.5;
+    }
+    const harvestTimestamp = plantTimestamp + additionalMillis;
     this.harvestTime.set(new Date(harvestTimestamp));
   }
 
   private harvestRegenerating() {
-    const growthTime = this.crop().growthTime();
     this.selfRegenFullyGrown.set(true);
-
-    const newGrowthDuration = this.divideGrowthTime(growthTime, 2);
-    this.growthTime.set(newGrowthDuration);
-
     this.plant();
   }
 
@@ -66,16 +72,14 @@ export class Field {
     this.harvestTime.set(undefined);
   }
 
-  resetGrowthTime() {
-    this.growthTime.set(this.crop().growthTime())
-  }
+}
 
-  private divideGrowthTime(growthTime: Duration, divisor: number): Duration {
-    let hoursDuration = growthTime.hours + (growthTime.minutes / 60);
-    hoursDuration = hoursDuration / divisor;
-    const newHours = Math.floor(hoursDuration);
-    const newMinutes = Math.round((hoursDuration - newHours) * 60);
-    return new Duration(newHours, newMinutes);
-  }
-
+export type StoredField = {
+  id: number,
+  name: string,
+  cropId: string,
+  plantTime: Date | undefined,
+  harvestTime: Date | undefined,
+  selfRegenFullyGrown: boolean,
+  isPlanted: boolean
 }

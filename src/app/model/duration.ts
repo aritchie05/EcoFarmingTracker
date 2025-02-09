@@ -8,7 +8,11 @@ export class Duration {
     this.minutes = minutes;
   }
 
-  toString() {
-    return `${this.hours}H:${this.minutes}M`;
+  static multiplyDuration(duration: Duration, multiplier: number): Duration {
+    let hoursDuration = duration.hours + (duration.minutes / 60);
+    hoursDuration *= multiplier;
+    const newHours = Math.floor(hoursDuration);
+    const newMinutes = Math.round((hoursDuration - newHours) * 60);
+    return new Duration(newHours, newMinutes);
   }
 }

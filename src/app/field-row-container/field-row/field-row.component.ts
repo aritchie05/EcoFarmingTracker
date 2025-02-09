@@ -1,12 +1,15 @@
-import {Component, computed, input, linkedSignal, OnInit, output, signal, WritableSignal} from '@angular/core';
+import {Component, computed, effect, input, OnInit, output, signal, WritableSignal} from '@angular/core';
 import {Field} from '../../model/field';
 import {MatInputModule} from '@angular/material/input';
 import {FormsModule} from '@angular/forms';
-import {CropService} from '../../crop.service';
+import {CropService} from '../../service/crop.service';
 import {Crop} from '../../model/crop';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatButtonModule} from '@angular/material/button';
+import {StorageService} from '../../service/storage.service';
+import {SettingsService} from '../../service/settings.service';
+import {Duration} from '../../model/duration';
 
 @Component({
   selector: 'app-field-row',
@@ -16,77 +19,53 @@ import {MatButtonModule} from '@angular/material/button';
 })
 export class FieldRowComponent implements OnInit {
   field = input.required<Field>();
+  rowClosed = output<Field>();
 
   readonly fieldPlaceholder = computed(() => `${this.field().crop().name().split(' ')[0]} Field`);
-  readonly growthDuration = linkedSignal(() => this.field().growthTime());
+  readonly displayedGrowthTime = computed(() => {
+    let duration = this.field().crop().growthTime();
+    if (this.field().selfRegenFullyGrown()) {
+      duration = Duration.multiplyDuration(duration, 0.5);
+    }
+    return `${duration.hours}H:${duration.minutes}M`;
+  });
 
-  readonly displayedPlantTime = this.getDisplayedPlantTime();
-  readonly displayedHarvestTime = this.getDisplayedHarvestTime();
+  readonly dateOptions: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23'
+  }
+
+  readonly displayedPlantTime = computed(() => this.field().plantTime()?.toLocaleString([], this.dateOptions));
+  readonly displayedHarvestTime = computed(() => this.field().harvestTime()?.toLocaleString([], this.dateOptions));
 
   readonly cropOptions: WritableSignal<Crop[]> = signal([]);
 
-  rowClosed = output<Field>();
-
-  constructor(cropService: CropService) {
+  constructor(cropService: CropService, private storageService: StorageService, private settingsService: SettingsService) {
     this.cropOptions.set(cropService.allCrops);
+
+    effect(() => {
+
+      //Read all these signals to detect changes for saving
+      const field = this.field();
+      field.name();
+      field.crop();
+      field.plantTime();
+      field.harvestTime();
+      field.selfRegenFullyGrown();
+      field.isPlanted();
+
+      this.storageService.saveField(field);
+    });
   }
 
   ngOnInit(): void {
-
-  }
-
-
-  getDisplayedPlantTime() {
-    return computed(() => {
-      let outputString = '';
-
-      const displayedHours = this.field().plantTime()?.getHours();
-      if (displayedHours !== undefined && displayedHours < 10) {
-        outputString += '0' + displayedHours;
-      } else {
-        outputString += displayedHours;
-      }
-
-      outputString += ':';
-
-      const displayedMinutes = this.field().plantTime()?.getMinutes();
-      if (displayedMinutes !== undefined && displayedMinutes < 10) {
-        outputString += '0' + displayedMinutes;
-      } else {
-        outputString += displayedMinutes;
-      }
-
-      return outputString;
-    });
-  }
-
-  getDisplayedHarvestTime() {
-    return computed(() => {
-      let outputString = '';
-
-      const displayedHours = this.field().harvestTime()?.getHours();
-      if (displayedHours && displayedHours < 10) {
-        outputString += '0' + displayedHours;
-      } else {
-        outputString += displayedHours;
-      }
-
-      outputString += ':';
-
-      const displayedMinutes = this.field().harvestTime()?.getMinutes();
-      if (displayedMinutes && displayedMinutes < 10) {
-        outputString += '0' + displayedMinutes;
-      } else {
-        outputString += displayedMinutes;
-      }
-
-      return outputString;
-    });
   }
 
   onCropChange(newCrop: Crop) {
     this.field().crop.set(newCrop);
-    this.growthDuration.set(newCrop.growthTime());
     this.field().plantTime.set(undefined);
     this.field().harvestTime.set(undefined);
     this.field().isPlanted.set(false);
