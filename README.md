@@ -2,6 +2,20 @@
 This project is a migrated version of the original [Eco Farming Tool](https://github.com/aritchie05/eco-farming-tool/). That project was a Java web app that used Spring Boot with Thymeleaf for UI rendering. I took that down because the hosting service I was using (Heroku) got rid of their free tier.
 So I rewrote this using Angular 19, so I could host it for free using [Vercel](https://vercel.com) (shoutout to them, they are amazing).
 
+## Usage
+
+Add a field with the big plus button. Name it if you want. Select the crop you are planting. When you have planted the field in game, press the Plant button.
+Now you will see the plant time, as well as the time to harvest at full maturity.
+
+When you have harvested the field, click the Harvest button. This will clear the times for crops that don't automatically regrow. For crops that do regrow (like Huckleberries), clicking Harvest will recalculate the growth time and display a new harvest time.
+
+Clicking Replant will calculate the new times assuming you dug up the entire field and replanted it. Do not do this for auto regrowing crops if you only harvested them, just click Harvest.
+
+### Settings
+
+Click the Settings cog icon in the top right. Change the Growth Time Multiplier if your server has modified plant growth times, and the values will automatically be reflected in the app. Note that plant/harvest times that are already saved will not be recalculated,
+you will need to Replant or Harvest for that. This is intentional.
+
 ## Angular Details
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.6.
