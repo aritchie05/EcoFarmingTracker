@@ -13,7 +13,7 @@ Clicking Replant will calculate the new times assuming you dug up the entire fie
 
 ### Settings
 
-Click the Settings cog icon in the top right. Change the Growth Time Multiplier if your server has modified plant growth times, and the values will automatically be reflected in the app. Note that plant/harvest times that are already saved will not be recalculated,
+Click the Settings cog icon in the top right. Change the Growth Time Modifier if your server has modified plant growth times, and the values will automatically be reflected in the app. Note that plant/harvest times that are already saved will not be recalculated,
 you will need to Replant or Harvest for that. This is intentional.
 
 ## Angular Details

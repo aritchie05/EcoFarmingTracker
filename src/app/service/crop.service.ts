@@ -16,7 +16,7 @@ export class CropService {
       this.allCrops.forEach(crop => {
         let duration: Duration;
         crop.regenerates() ? duration = regrowableDuration : duration = baseDuration;
-        crop.growthTime.set(Duration.multiplyDuration(duration, growthTimeModifier));
+        crop.growthTime.set(Duration.multiplyDuration(duration, 1 / growthTimeModifier));
       });
     });
   }
